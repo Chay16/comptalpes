@@ -22,7 +22,7 @@ test: install
 	@uv run pytest
 
 cov: install
-	@uv run pytest --cov . --cov-branch
+	@uv run pytest --cov src --cov-branch
 
 cov-html: install
-	@uv run pytest --cov . --cov-branch --cov-report html --cov-report term
+	@uv run pytest --cov src --cov-branch --cov-report html --cov-report term
