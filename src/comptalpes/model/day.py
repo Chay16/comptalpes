@@ -1,0 +1,34 @@
+from dataclasses import dataclass, field
+from decimal import Decimal
+
+from .guest import Guest
+
+
+@dataclass
+class Day:
+    id: int
+    name: str
+    costs: dict[str, Decimal] = field(default_factory=dict)
+    guests: set[Guest] = field(default_factory=set)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Day):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+    @property
+    def occupancy(self) -> int:
+        return len(self.guests)
+
+    def add_guest(self, new_guest: Guest) -> None:
+        self.guests.add(new_guest)
+
+    @property
+    def cost_per_guest(self) -> dict[str, Decimal]:
+        if not self.guests:
+            return {}
+        count = Decimal(len(self.guests))
+        return {category: amount / count for category, amount in self.costs.items()}

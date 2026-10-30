@@ -1,0 +1,76 @@
+[project]
+name = "comptalpes"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.3",
+]
+
+[project.scripts]
+comptalpes = "comptalpes.main:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+    "build",
+]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes checks
+    "F401",  # Select unused imports
+    "W",  # pycodestyle warnings
+    "I001",  # Imports sorting
+    "C4",  # Rules related to comprehensions
+    "RUF100",  # Unused noqa
+    "PGH004", # Ensure there is a reason for a noqa
+    "G010", # Checks for usage of deprecated logging.warn
+    "PGH005", # Protects from fogetting parenthesis on a mock method
+    "PIE807", # Checks if lambda has been used instead of collection constructor
+    # Docstring rules
+    "D200",
+    "D204",
+    "D205",
+    "D206",
+    "D213",
+    "D300",
+    "D400",
+    "D402",
+    "D404",
+    "D201",
+    "D210",
+    "D211",
+    "D403",
+    "D419",
+    # Performance lints
+    "PERF101", # Avoids casting to list to use as iterators
+    "PERF102", # Avoids looping over keys xor values using for dict.items()
+    "PERF401", # Checks where    comprhension should be used
+    "PERF402", # Checks if a for loop has been used to copy a list
+    "RUF015",  # Checks for the usage of a list to get a single element from an iterator
+    "PIE810",  # Checks if startswith or endswith calls could be combined in a single call
+]
+
+[tool.ruff.format]
+quote-style = "double"

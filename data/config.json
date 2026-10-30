@@ -1,0 +1,122 @@
+{
+    "days":[
+        "saturday",
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+    ],
+    "prices": {
+        "house": 7933.46,
+        "food": 1751.33
+    },
+    "guests":[
+        {
+            "name": "Aimée",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday"],
+            "paid": {}
+        },
+        {
+            "name": "Aro",
+            "stay": ["saturday", "sunday", "monday", "tuesday"],
+            "paid": {"food":99}
+        },
+        {
+            "name": "Briquette",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":500, "food":808}
+        },
+        {
+            "name": "Capucine",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"food":340}
+        },
+        {
+            "name": "Chay",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"food":130}
+        },
+        {
+            "name": "Coco",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":1000}
+        },
+        {
+            "name": "Daphné",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":2933.79, "food":291}
+        },
+        {
+            "name": "Flo",
+            "stay": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"food": 48}
+        },
+        {
+            "name": "Franck",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {}
+        },
+        {
+            "name": "Gautier",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
+            "paid": {}
+        },
+        {
+            "name": "Hélène",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"food":35}
+        },
+        {
+            "name": "Jeff",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {}
+        },
+        {
+            "name": "Juju",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
+            "paid": {}
+        },
+        {
+            "name": "Lorena",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":1000}
+        },
+        {
+            "name": "Loulou",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {}
+        },
+        {
+            "name": "Moog",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {}
+        },
+        {
+            "name": "Pachu",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":1000}
+        },
+        {
+            "name": "Paco",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {}
+        },
+        {
+            "name": "Robin",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":1000}
+        },
+        {
+            "name": "Roxanne",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
+            "paid": {"house":500}
+        },
+        {
+            "name": "Seungeun",
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
+            "paid": {}
+        }
+    ]
+}
