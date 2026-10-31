@@ -1,11 +1,12 @@
 import uuid
 from decimal import Decimal
 from pathlib import Path
+from datetime import date
 
 import pytest
 
 from comptalpes import utils
-from comptalpes.model import Cost, Day, Guest
+from comptalpes.model import Cost, Day, Guest, Stay
 
 
 @pytest.fixture
@@ -30,40 +31,45 @@ def test_load_config(mock_uuid_sequence) -> None:
         Cost(category="house", amount=Decimal("1234.56")),
         Cost(category="food", amount=Decimal("78.90")),
     ]
-    expected_day1 = Day(
-        id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
-        name="1",
-        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
-    )
-    expected_day2 = Day(
-        id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
-        name="2",
-        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
-    )
+    expected_stay = Stay(start=date(1970,1,1), end=date(1970,1,2))
     expected_guestA = Guest(
-        id=uuid.UUID("00000000-0000-0000-0000-000000000003"),
+        id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
         name="A",
         stay=["1", "2"],
         paid={"house": Decimal("1034.56")},
     )
     expected_guestB = Guest(
-        id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
+        id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
         name="B",
         stay=["1"],
         paid={},
     )
     expected_guestC = Guest(
-        id=uuid.UUID("00000000-0000-0000-0000-000000000005"),
+        id=uuid.UUID("00000000-0000-0000-0000-000000000003"),
         name="C",
         stay=["1", "2"],
         paid={"house": Decimal("200"), "food": Decimal("78.90")},
+        
     )
-    expected_day1.guests = {expected_guestA, expected_guestB, expected_guestC}
-    expected_day2.guests = {expected_guestA, expected_guestC}
     assert config.costs == expected_costs
-    assert config.days == [expected_day1, expected_day2]
+    assert config.stay == expected_stay
     assert config.guests == [expected_guestA, expected_guestB, expected_guestC]
 
+
+def test_generate_days_from_stay(mock_uuid_sequence) -> None:
+    stay = Stay(start=date(1970,1,1), end=date(1970,1,2))
+    expected_days = [
+        Day(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            name="thursday",
+        ),
+        Day(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            name="friday",
+        )
+    ]
+    days = utils.generate_days_from_stay(stay)
+    assert days == expected_days
 
 def test_setup_occupancy() -> None:
     days = [Day(name="1"), Day(name="2")]

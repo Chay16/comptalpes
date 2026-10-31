@@ -1,9 +1,10 @@
 import argparse
+from datetime import timedelta
 import json
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-from comptalpes.model import Config, Cost, Day, Guest
+from comptalpes.model import Config, Cost, Day, Guest, Stay
 
 CENT = Decimal("0.01")
 
@@ -34,6 +35,17 @@ def load_config(
     config = Config(**data)
     return config
 
+
+def generate_days_from_stay(stay: Stay) -> list[Day]:
+    days = []
+    current_date = stay.start
+
+    while current_date <= stay.end:
+        day_name = current_date.strftime("%A").lower()
+        days.append(Day(name=day_name))      
+        current_date += timedelta(days=1)
+        
+    return days
 
 def setup_occupancy(days: list[Day], guests: list[Guest]) -> None:
     for day in days:

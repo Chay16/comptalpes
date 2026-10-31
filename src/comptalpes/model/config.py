@@ -1,14 +1,11 @@
 from pydantic import BaseModel
 
 from .cost import Cost
-from .day import Day
+from .stay import Stay
 from .guest import Guest
 
 
 class Config(BaseModel):
     costs: list[Cost]
-    days: list[Day]
+    stay: Stay
     guests: list[Guest]
-
-
-Config.model_rebuild()

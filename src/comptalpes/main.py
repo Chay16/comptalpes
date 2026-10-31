@@ -50,8 +50,9 @@ def solver(balances: dict[str, Decimal]) -> list[tuple[str, str, Decimal]]:
 def main() -> None:
     config_path = utils.get_args()
     config = utils.load_config(config_path)
+    days = utils.generate_days_from_stay(config.stay)
 
-    valid_day_names = {d.name for d in config.days}
+    valid_day_names = {d.name for d in days}
     for guest in config.guests:
         invalid_days = set(guest.stay) - valid_day_names
         if invalid_days:
@@ -68,10 +69,10 @@ def main() -> None:
         )
         raise ValueError(msg)
 
-    utils.setup_occupancy(config.days, config.guests)
-    utils.setup_costs(config.days, config.costs)
+    utils.setup_occupancy(days, config.guests)
+    utils.setup_costs(days, config.costs)
     for guest in config.guests:
-        utils.setup_personal_costs(guest, config.days)
+        utils.setup_personal_costs(guest, days)
 
     quantized_balances = utils.quantize_balances(config.guests)
     transfers = solver(quantized_balances)

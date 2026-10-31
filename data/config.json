@@ -9,20 +9,14 @@
             "amount": 1751.33
         }
     ],
-    "days":[
-        {"name": "saturday"},
-        {"name": "sunday"},
-        {"name": "monday"},
-        {"name": "tuesday"},
-        {"name": "wednesday"},
-        {"name": "thursday"},
-        {"name": "friday"}
-    ],
+    "stay":{
+        "start": "2026-01-31",
+        "end": "2026-02-06"
+    },
     "guests":[
         {
             "name": "Aimée",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday"]
         },
         {
             "name": "Aro",
@@ -61,13 +55,11 @@
         },
         {
             "name": "Franck",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
         },
         {
             "name": "Gautier",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"]
         },
         {
             "name": "Hélène",
@@ -76,13 +68,11 @@
         },
         {
             "name": "Jeff",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
         },
         {
             "name": "Juju",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"]
         },
         {
             "name": "Lorena",
@@ -91,13 +81,11 @@
         },
         {
             "name": "Loulou",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
         },
         {
             "name": "Moog",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
         },
         {
             "name": "Pachu",
@@ -106,8 +94,7 @@
         },
         {
             "name": "Paco",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
         },
         {
             "name": "Robin",
@@ -121,8 +108,7 @@
         },
         {
             "name": "Seungeun",
-            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"],
-            "paid": {}
+            "stay": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"]
         }
     ]
 }
