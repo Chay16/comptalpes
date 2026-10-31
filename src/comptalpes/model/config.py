@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
 from .cost import Cost
-from .stay import Stay
 from .guest import Guest
+from .stay import Stay
 
 
 class Config(BaseModel):

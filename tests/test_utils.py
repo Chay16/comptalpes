@@ -1,7 +1,7 @@
 import uuid
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from datetime import date
 
 import pytest
 
@@ -31,7 +31,7 @@ def test_load_config(mock_uuid_sequence) -> None:
         Cost(category="house", amount=Decimal("1234.56")),
         Cost(category="food", amount=Decimal("78.90")),
     ]
-    expected_stay = Stay(start=date(1970,1,1), end=date(1970,1,2))
+    expected_stay = Stay(start=date(1970, 1, 1), end=date(1970, 1, 2))
     expected_guestA = Guest(
         id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
         name="A",
@@ -49,7 +49,6 @@ def test_load_config(mock_uuid_sequence) -> None:
         name="C",
         stay=["1", "2"],
         paid={"house": Decimal("200"), "food": Decimal("78.90")},
-        
     )
     assert config.costs == expected_costs
     assert config.stay == expected_stay
@@ -57,7 +56,7 @@ def test_load_config(mock_uuid_sequence) -> None:
 
 
 def test_generate_days_from_stay(mock_uuid_sequence) -> None:
-    stay = Stay(start=date(1970,1,1), end=date(1970,1,2))
+    stay = Stay(start=date(1970, 1, 1), end=date(1970, 1, 2))
     expected_days = [
         Day(
             id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
@@ -66,10 +65,11 @@ def test_generate_days_from_stay(mock_uuid_sequence) -> None:
         Day(
             id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
             name="friday",
-        )
+        ),
     ]
     days = utils.generate_days_from_stay(stay)
     assert days == expected_days
+
 
 def test_setup_occupancy() -> None:
     days = [Day(name="1"), Day(name="2")]

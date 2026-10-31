@@ -1,6 +1,6 @@
 import argparse
-from datetime import timedelta
 import json
+from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
@@ -42,10 +42,11 @@ def generate_days_from_stay(stay: Stay) -> list[Day]:
 
     while current_date <= stay.end:
         day_name = current_date.strftime("%A").lower()
-        days.append(Day(name=day_name))      
+        days.append(Day(name=day_name))
         current_date += timedelta(days=1)
-        
+
     return days
+
 
 def setup_occupancy(days: list[Day], guests: list[Guest]) -> None:
     for day in days:
