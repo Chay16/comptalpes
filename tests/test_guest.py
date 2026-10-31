@@ -4,8 +4,10 @@ from comptalpes.model import Guest
 
 
 def test_guest() -> None:
-    guest = Guest(name="guest", stay=["day1"], paid={}, due={})
-    guest2 = Guest(name="guest", stay=["day1"], paid={"cat1": Decimal("31")}, due={})
+    guest = Guest(id=1, name="guest", stay=["day1"], paid={}, due={})
+    guest2 = Guest(
+        id=2, name="guest", stay=["day1"], paid={"cat1": Decimal("31")}, due={}
+    )
     assert guest == guest
     assert guest != guest2
     assert guest.total_due == 0

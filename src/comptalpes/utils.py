@@ -14,10 +14,11 @@ def load_config(
         data = json.load(f, parse_float=Decimal)
 
     guests: dict[str, Guest] = {}
-    for g in data["guests"]:
+    for i, g in enumerate(data["guests"]):
         paid_decimal = {k: Decimal(str(v)) for k, v in g.get("paid", {}).items()}
         guests[g["name"]] = Guest(
             name=g["name"],
+            id=i,
             stay=g.get("stay", []),
             paid=paid_decimal,
         )

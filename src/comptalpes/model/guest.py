@@ -1,12 +1,11 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
-from uuid import UUID, uuid4
 
 
 @dataclass
 class Guest:
     name: str
-    id: UUID = field(default_factory=uuid4)
+    id: int
     stay: list[str] = field(default_factory=list)
     paid: dict[str, Decimal] = field(default_factory=dict)
     due: dict[str, Decimal] = field(default_factory=dict)
