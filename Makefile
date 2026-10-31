@@ -15,11 +15,11 @@ lint:
 	@uv run ruff check .
 
 format:
-	@uv run ruff check --fix .
 	@uv run ruff format .
+	@uv run ruff check --fix .
 
 test: install
-	@uv run pytest
+	@uv run pytest -vvv -s
 
 cov: install
 	@uv run pytest --cov src --cov-branch
