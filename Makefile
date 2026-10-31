@@ -26,3 +26,9 @@ cov: install
 
 cov-html: install
 	@uv run pytest --cov src --cov-branch --cov-report html --cov-report term
+
+webapp:
+	@uv run streamlit run src/webapp/comptalpes.py
+
+server:
+	@uv run fastapi dev src/app/main.py
