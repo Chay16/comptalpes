@@ -1,6 +1,4 @@
-import argparse
 from decimal import Decimal
-from pathlib import Path
 
 from comptalpes import utils
 
@@ -50,26 +48,32 @@ def solver(balances: dict[str, Decimal]) -> list[tuple[str, str, Decimal]]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Comptalpes", formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument(
-        "--config",
-        type=str,
-        required=False,
-        default=Path(__file__).parent.parent.parent / "data/config.json",
-        help="Path to configuration file JSON",
-    )
-    args = parser.parse_args()
+    config_path = utils.get_args()
+    config = utils.load_config(config_path)
 
-    config_path = Path(args.config)
+    valid_day_names = {d.name for d in config.days}
+    for guest in config.guests:
+        invalid_days = set(guest.stay) - valid_day_names
+        if invalid_days:
+            raise ValueError(f"Day(s) unknown for {guest.name} : {invalid_days}")
 
-    days, _, guests = utils.load_config(config_path)
+    total_costs = sum([c.amount for c in config.costs], Decimal(0))
+    total_paid = sum([g.total_paid for g in config.guests], Decimal(0))
+    gap = total_paid - total_costs
 
-    for guest in guests.values():
-        utils.setup_personal_costs(guest, days)
+    if gap != Decimal(0):
+        msg = (
+            f"Gap Detected : Total Costs = {total_costs:.2f} €, "
+            f"Total Paid = {total_paid:.2f} € (gap of {gap:+.2f} €)."
+        )
+        raise ValueError(msg)
 
-    quantized_balances = utils.quantize_balances(list(guests.values()))
+    utils.setup_occupancy(config.days, config.guests)
+    utils.setup_costs(config.days, config.costs)
+    for guest in config.guests:
+        utils.setup_personal_costs(guest, config.days)
+
+    quantized_balances = utils.quantize_balances(config.guests)
     transfers = solver(quantized_balances)
 
     print(utils.format_transfers_tables(transfers))

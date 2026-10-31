@@ -1,12 +1,22 @@
 {
-    "days":[
-        "1",
-        "2"
+    "costs":[
+        {
+            "category": "house",
+            "amount": 1234.56
+        },
+        {
+            "category": "food",
+            "amount": 78.90
+        }
     ],
-    "prices": {
-        "house": 1234.56,
-        "food": 78.90
-    },
+    "days":[
+        {
+            "name": "1"
+        },
+        {
+            "name": "2"
+        }
+    ],
     "guests":[
         {
             "name": "A",

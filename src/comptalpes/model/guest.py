@@ -1,14 +1,15 @@
-from dataclasses import dataclass, field
+import uuid
 from decimal import Decimal
 
+from pydantic import BaseModel, Field
 
-@dataclass
-class Guest:
+
+class Guest(BaseModel):
     name: str
-    id: int
-    stay: list[str] = field(default_factory=list)
-    paid: dict[str, Decimal] = field(default_factory=dict)
-    due: dict[str, Decimal] = field(default_factory=dict)
+    id: uuid.UUID = Field(default_factory=lambda: uuid.uuid4())
+    stay: list[str] = Field(default_factory=list)
+    paid: dict[str, Decimal] = Field(default_factory=dict)
+    due: dict[str, Decimal] = Field(default_factory=dict)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Guest):

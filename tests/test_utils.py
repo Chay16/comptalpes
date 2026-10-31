@@ -1,59 +1,76 @@
+import uuid
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 from comptalpes import utils
-from comptalpes.model import Day, Guest
+from comptalpes.model import Cost, Day, Guest
 
 
-def test_load_config() -> None:
+@pytest.fixture
+def mock_uuid_sequence(monkeypatch):
+    uuids = iter(
+        [
+            uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            uuid.UUID("00000000-0000-0000-0000-000000000003"),
+            uuid.UUID("00000000-0000-0000-0000-000000000004"),
+            uuid.UUID("00000000-0000-0000-0000-000000000005"),
+        ]
+    )
+    monkeypatch.setattr(uuid, "uuid4", lambda: next(uuids))
+
+
+def test_load_config(mock_uuid_sequence) -> None:
     config_path = Path(__file__).parent / "config-test.json"
-    days, prices, guests = utils.load_config(config_path)
+    config = utils.load_config(config_path)
 
-    expected_prices = {"house": Decimal("1234.56"), "food": Decimal("78.90")}
+    expected_costs = [
+        Cost(category="house", amount=Decimal("1234.56")),
+        Cost(category="food", amount=Decimal("78.90")),
+    ]
+    expected_day1 = Day(
+        id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+        name="1",
+        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
+    )
+    expected_day2 = Day(
+        id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+        name="2",
+        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
+    )
     expected_guestA = Guest(
+        id=uuid.UUID("00000000-0000-0000-0000-000000000003"),
         name="A",
-        id=0,
         stay=["1", "2"],
         paid={"house": Decimal("1034.56")},
     )
     expected_guestB = Guest(
+        id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
         name="B",
-        id=1,
         stay=["1"],
         paid={},
     )
     expected_guestC = Guest(
+        id=uuid.UUID("00000000-0000-0000-0000-000000000005"),
         name="C",
-        id=2,
         stay=["1", "2"],
         paid={"house": Decimal("200"), "food": Decimal("78.90")},
     )
-
-    expected_Day1 = Day(
-        id=0,
-        name="1",
-        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
-        guests={expected_guestA, expected_guestB, expected_guestC},
-    )
-    expected_Day2 = Day(
-        id=1,
-        name="2",
-        costs={"house": Decimal("617.28"), "food": Decimal("39.45")},
-        guests={expected_guestA, expected_guestC},
-    )
-    expected_guests = {"A": expected_guestA, "B": expected_guestB, "C": expected_guestC}
-    expected_days = [expected_Day1, expected_Day2]
-    assert prices == expected_prices
-    assert days == expected_days
-    assert guests == expected_guests
+    expected_day1.guests = {expected_guestA, expected_guestB, expected_guestC}
+    expected_day2.guests = {expected_guestA, expected_guestC}
+    assert config.costs == expected_costs
+    assert config.days == [expected_day1, expected_day2]
+    assert config.guests == [expected_guestA, expected_guestB, expected_guestC]
 
 
 def test_setup_occupancy() -> None:
-    days = [Day(id=0, name="1"), Day(id=1, name="2")]
+    days = [Day(name="1"), Day(name="2")]
     guests = [
-        Guest(name="a", id=1, stay=["1"]),
-        Guest(name="b", id=2, stay=["1", "2"]),
-        Guest(name="c", id=3, stay=["2"]),
+        Guest(name="a", stay=["1"]),
+        Guest(name="b", stay=["1", "2"]),
+        Guest(name="c", stay=["2"]),
     ]
 
     utils.setup_occupancy(days, guests)
@@ -62,22 +79,25 @@ def test_setup_occupancy() -> None:
 
 
 def test_setup_costs() -> None:
-    days = [Day(id=0, name="1"), Day(id=1, name="2")]
-    costs = {"house": Decimal("100"), "food": Decimal("44.90")}
+    days = [Day(name="1"), Day(name="2")]
+    costs = [
+        Cost(category="house", amount=Decimal("100")),
+        Cost(category="food", amount=Decimal("44.90")),
+    ]
     utils.setup_costs(days, costs)
     expected_costs_per_day = {"house": Decimal("50"), "food": Decimal("22.45")}
     assert all(d.costs == expected_costs_per_day for d in days)
 
 
 def test_setup_personal_costs() -> None:
-    costs = {"a": Decimal("100")}
-    guestA = Guest(name="a", id=1, stay=["1"], paid={"a": Decimal("100")})
-    guestB = Guest(name="b", id=2, stay=["1", "2"])
-    guestC = Guest(name="c", id=3, stay=["2"])
+    costs = [Cost(category="a", amount=Decimal("100"))]
+    guestA = Guest(name="a", stay=["1"], paid={"a": Decimal("100")})
+    guestB = Guest(name="b", stay=["1", "2"])
+    guestC = Guest(name="c", stay=["2"])
 
     days = [
-        Day(id=0, name="1", guests={guestA, guestB}),
-        Day(id=1, name="2", guests={guestB, guestC}),
+        Day(name="1", guests={guestA, guestB}),
+        Day(name="2", guests={guestB, guestC}),
     ]
     utils.setup_costs(days, costs)
     utils.setup_personal_costs(guestA, days)
@@ -89,8 +109,8 @@ def test_setup_personal_costs() -> None:
 
 
 def test_quantize_balances_zero_discrepancy():
-    guestA = Guest(name="a", id=1, paid={"a": Decimal("10.50")})
-    guestB = Guest(name="b", id=2, due={"a": Decimal("10.50")})
+    guestA = Guest(name="a", paid={"a": Decimal("10.50")})
+    guestB = Guest(name="b", due={"a": Decimal("10.50")})
 
     result = utils.quantize_balances([guestA, guestB])
 
@@ -99,9 +119,9 @@ def test_quantize_balances_zero_discrepancy():
 
 
 def test_quantize_balances_positive_discrepancy():
-    guestA = Guest(name="a", id=1, paid={"a": Decimal("10.335")})
-    guestB = Guest(name="b", id=2, paid={"a": Decimal("10.335")})
-    guestC = Guest(name="c", id=3, due={"a": Decimal("20.670")})
+    guestA = Guest(name="a", paid={"a": Decimal("10.335")})
+    guestB = Guest(name="b", paid={"a": Decimal("10.335")})
+    guestC = Guest(name="c", due={"a": Decimal("20.670")})
 
     result = utils.quantize_balances([guestA, guestB, guestC])
 
@@ -111,9 +131,9 @@ def test_quantize_balances_positive_discrepancy():
 
 
 def test_quantize_balances_negative_discrepancy():
-    guestA = Guest(name="a", id=1, due={"a": Decimal("10.335")})
-    guestB = Guest(name="b", id=2, due={"a": Decimal("10.335")})
-    guestC = Guest(name="c", id=3, paid={"a": Decimal("20.670")})
+    guestA = Guest(name="a", due={"a": Decimal("10.335")})
+    guestB = Guest(name="b", due={"a": Decimal("10.335")})
+    guestC = Guest(name="c", paid={"a": Decimal("20.670")})
 
     result = utils.quantize_balances([guestA, guestB, guestC])
 

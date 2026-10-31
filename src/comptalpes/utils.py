@@ -1,54 +1,38 @@
+import argparse
 import json
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-from comptalpes.model import Day, Guest
+from comptalpes.model import Config, Cost, Day, Guest
 
 CENT = Decimal("0.01")
 
 
+def get_args() -> Path:
+    parser = argparse.ArgumentParser(
+        description="Comptalpes", formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "--config",
+        type=str,
+        required=False,
+        default=Path(__file__).parent.parent.parent / "data/config.json",
+        help="Path to configuration file JSON",
+    )
+    args = parser.parse_args()
+    config_path = Path(args.config)
+    if not config_path.is_file():
+        raise FileNotFoundError(f"{config_path.absolute()}")
+    return config_path
+
+
 def load_config(
     config_path: Path,
-) -> tuple[list[Day], dict[str, Decimal], dict[str, Guest]]:
+) -> Config:
     with open(config_path, encoding="utf-8") as f:
         data = json.load(f, parse_float=Decimal)
-
-    guests: dict[str, Guest] = {}
-    for i, g in enumerate(data["guests"]):
-        paid_decimal = {k: Decimal(str(v)) for k, v in g.get("paid", {}).items()}
-        guests[g["name"]] = Guest(
-            name=g["name"],
-            id=i,
-            stay=g.get("stay", []),
-            paid=paid_decimal,
-        )
-
-    days: list[Day] = [Day(id=i, name=d) for i, d in enumerate(data["days"])]
-    prices: dict[str, Decimal] = {
-        category: Decimal(str(amount)) for category, amount in data["prices"].items()
-    }
-
-    valid_day_names = {d.name for d in days}
-    for guest in guests.values():
-        invalid_days = set(guest.stay) - valid_day_names
-        if invalid_days:
-            raise ValueError(f"Day(s) unknown for {guest.name} : {invalid_days}")
-
-    total_prices = sum(prices.values(), Decimal(0))
-    total_paid = sum((g.total_paid for g in guests.values()), Decimal(0))
-    gap = total_paid - total_prices
-
-    if gap != Decimal(0):
-        msg = (
-            f"Gap Detected : Total Due = {total_prices:.2f} €, "
-            f"Total Paid = {total_paid:.2f} € (gap of {gap:+.2f} €)."
-        )
-        raise ValueError(msg)
-
-    setup_occupancy(days, list(guests.values()))
-    setup_costs(days, prices)
-
-    return days, prices, guests
+    config = Config(**data)
+    return config
 
 
 def setup_occupancy(days: list[Day], guests: list[Guest]) -> None:
@@ -58,14 +42,14 @@ def setup_occupancy(days: list[Day], guests: list[Guest]) -> None:
                 day.add_guest(guest)
 
 
-def setup_costs(days: list[Day], costs: dict[str, Decimal]) -> None:
+def setup_costs(days: list[Day], costs: list[Cost]) -> None:
     if not days:
         return
     nb_days = Decimal(len(days))
-    for category, price in costs.items():
-        daily_amount = price / nb_days
+    for cost in costs:
+        daily_amount = cost.amount / nb_days
         for day in days:
-            day.costs[category] = daily_amount
+            day.costs[cost.category] = daily_amount
 
 
 def setup_personal_costs(guest: Guest, days: list[Day]) -> None:

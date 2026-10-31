@@ -1,17 +1,23 @@
 {
-    "days":[
-        "saturday",
-        "sunday",
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday"
+    "costs":[
+        {
+            "category": "house",
+            "amount": 7933.46
+        },
+        {
+            "category": "food",
+            "amount": 1751.33
+        }
     ],
-    "prices": {
-        "house": 7933.46,
-        "food": 1751.33
-    },
+    "days":[
+        {"name": "saturday"},
+        {"name": "sunday"},
+        {"name": "monday"},
+        {"name": "tuesday"},
+        {"name": "wednesday"},
+        {"name": "thursday"},
+        {"name": "friday"}
+    ],
     "guests":[
         {
             "name": "Aimée",

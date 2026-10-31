@@ -1,15 +1,18 @@
-from dataclasses import dataclass, field
+import uuid
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
-from .guest import Guest
+from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from .guest import Guest
 
 
-@dataclass
-class Day:
-    id: int
+class Day(BaseModel):
     name: str
-    costs: dict[str, Decimal] = field(default_factory=dict)
-    guests: set[Guest] = field(default_factory=set)
+    id: uuid.UUID = Field(default_factory=lambda: uuid.uuid4())
+    costs: dict[str, Decimal] = Field(default_factory=dict)
+    guests: set["Guest"] = Field(default_factory=set)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Day):
