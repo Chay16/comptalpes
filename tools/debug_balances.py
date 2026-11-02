@@ -1,20 +1,23 @@
 import argparse
 import json
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 from pathlib import Path
 
 from comptalpes.model.entities import (
     Expense,
     ExpenseCategory,
-    ExpenseShare,
+    ExpensePayment,
     Transfer,
     Trip,
     TripMember,
     User,
 )
-from comptalpes.model.enums import SplitType, TransferStatus
-
-CENT = Decimal("0.01")
+from comptalpes.model.enums import SplitType
+from comptalpes.services import (
+    BalanceCalculator,
+    ExpenseSplitCalculator,
+    TransfersCalculator,
+)
 
 
 def get_args() -> Path:
@@ -53,149 +56,49 @@ def build_trip(data: dict) -> Trip:
     )
 
 
-def build_expenses(data: dict) -> list[Expense]:
+def build_expenses(data: dict, trip: Trip) -> list[Expense]:
+    by_name = {member.user.name: member for member in trip.members}
+    calculator = ExpenseSplitCalculator()
+
+    def compute_shares(expense: Expense) -> None:
+        present = [
+            member
+            for member in trip.members
+            if member.arrival_date <= expense.expense_date < member.departure_date
+        ]
+        expense.shares = calculator.calculate(expense, present or trip.members)
+
     expenses = []
     for item in data["expenses"]:
         category_fields = {"name": item["category"]}
         if "split_type" in item:
             category_fields["split_type"] = SplitType(item["split_type"])
-        expenses.append(
+        expense = Expense(
+            description=item["description"],
+            amount=item["amount"],
+            expense_date=item["expense_date"],
+            category=ExpenseCategory(**category_fields),
+        )
+        compute_shares(expense)
+        expenses.append(expense)
+
+    for item in data["members"]:
+        expenses.extend(
             Expense(
-                description=item["description"],
-                amount=item["amount"],
-                expense_date=item["expense_date"],
-                category=ExpenseCategory(**category_fields),
+                description=advance["description"],
+                amount=advance["amount"],
+                expense_date=advance["expense_date"],
+                category=ExpenseCategory(name=advance["category"]),
+                payments=[
+                    ExpensePayment(
+                        trip_member=by_name[item["name"]],
+                        amount=advance["amount"],
+                    )
+                ],
             )
+            for advance in item.get("paid", [])
         )
     return expenses
-
-
-def participants(expense: Expense, trip: Trip) -> list[TripMember]:
-    present = [
-        member
-        for member in trip.members
-        if member.arrival_date <= expense.expense_date < member.departure_date
-    ]
-    return present or trip.members
-
-
-def weights(expense: Expense, trip: Trip) -> list[tuple[TripMember, Decimal]]:
-    participants_of_expense = participants(expense, trip)
-    if expense.split_type == SplitType.BY_NIGHTS:
-        return [(member, Decimal(member.nights)) for member in participants_of_expense]
-    return [(member, Decimal(1)) for member in participants_of_expense]
-
-
-def compute_shares(expense: Expense, trip: Trip) -> None:
-    member_weights = weights(expense, trip)
-    total_weight = sum((weight for _, weight in member_weights), Decimal(0))
-
-    exacts: list[tuple[TripMember, Decimal, Decimal]] = []
-    floor_total = Decimal(0)
-    for member, weight in member_weights:
-        exact = expense.amount * weight / total_weight
-        floor = exact.quantize(CENT, rounding=ROUND_HALF_UP)
-        exacts.append((member, floor, exact - floor))
-        floor_total += floor
-
-    remaining = int((expense.amount - floor_total) / CENT)
-    order = sorted(range(len(exacts)), key=lambda i: exacts[i][2], reverse=True)
-    amounts = [floor for _, floor, _ in exacts]
-    for index in order[: max(remaining, 0)]:
-        amounts[index] += CENT
-
-    expense.shares = [
-        ExpenseShare(trip_member=member, amount=amounts[index])
-        for index, (member, _, _) in enumerate(exacts)
-    ]
-
-
-def paid_by_member(data: dict, trip: Trip) -> dict[str, Decimal]:
-    paid: dict[str, Decimal] = {member.user.name: Decimal(0) for member in trip.members}
-    for item in data["members"]:
-        for advance in item.get("paid", []):
-            paid[item["name"]] += Decimal(advance["amount"])
-    return paid
-
-
-def compute_balances(
-    trip: Trip, expenses: list[Expense], paid: dict[str, Decimal]
-) -> dict[str, Decimal]:
-    total_paid = sum(paid.values(), Decimal(0))
-    total_expenses = sum((expense.amount for expense in expenses), Decimal(0))
-    gap = total_paid - total_expenses
-    if gap != Decimal(0):
-        msg = (
-            f"Gap Detected : Total Expenses = {total_expenses:.2f} €, "
-            f"Total Paid = {total_paid:.2f} € (gap of {gap:+.2f} €)."
-        )
-        raise ValueError(msg)
-
-    balances = {}
-    for member in trip.members:
-        due = sum(
-            (
-                share.amount
-                for expense in expenses
-                for share in expense.shares
-                if share.trip_member.id == member.id
-            ),
-            Decimal(0),
-        )
-        balances[member.user.name] = paid[member.user.name] - due
-    return balances
-
-
-def solver(balances: dict[str, Decimal], trip: Trip) -> list[Transfer]:
-    by_name = {member.user.name: member for member in trip.members}
-    working_balances = dict(balances)
-
-    creditors = sorted(
-        [name for name, b in working_balances.items() if b > Decimal(0)],
-        key=lambda name: working_balances[name],
-        reverse=True,
-    )
-    debtors = sorted(
-        [name for name, b in working_balances.items() if b < Decimal(0)],
-        key=lambda name: working_balances[name],
-    )
-
-    i = 0
-    j = 0
-    transfers: list[Transfer] = []
-
-    while i < len(debtors) and j < len(creditors):
-        debtor = debtors[i]
-        creditor = creditors[j]
-
-        debt = working_balances[debtor]
-        credit = working_balances[creditor]
-
-        if debt >= Decimal(0):
-            i += 1
-            continue
-        if credit <= Decimal(0):
-            j += 1
-            continue
-
-        transfer_value = min(-debt, credit)
-        working_balances[debtor] += transfer_value
-        working_balances[creditor] -= transfer_value
-        transfers.append(
-            Transfer(
-                from_member=by_name[debtor],
-                to_member=by_name[creditor],
-                amount=transfer_value,
-                status=TransferStatus.PROPOSED,
-            )
-        )
-
-        if working_balances[debtor] == Decimal(0):
-            i += 1
-        if working_balances[creditor] == Decimal(0):
-            j += 1
-
-    return transfers
 
 
 def format_transfers_table(transfers: list[Transfer]) -> str:
@@ -233,14 +136,10 @@ def main() -> None:
         data = json.load(f, parse_float=Decimal)
 
     trip = build_trip(data)
-    expenses = build_expenses(data)
+    trip.expenses = build_expenses(data, trip)
 
-    for expense in expenses:
-        compute_shares(expense, trip)
-
-    paid = paid_by_member(data, trip)
-    balances = compute_balances(trip, expenses, paid)
-    transfers = solver(balances, trip)
+    balances = BalanceCalculator().calculate(trip)
+    transfers = TransfersCalculator().calculate(balances, trip.members)
 
     print(format_transfers_table(transfers))
     print(f"Total Transfers : {sum((t.amount for t in transfers), Decimal(0)):.2f} €")
