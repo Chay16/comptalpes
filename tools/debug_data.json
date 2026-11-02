@@ -1,0 +1,238 @@
+{
+    "trip": {
+        "name": "Serre Chevalier",
+        "start_date": "2026-01-31",
+        "end_date": "2026-02-07"
+    },
+    "members": [
+        {
+            "name": "Aimée",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-05"
+        },
+        {
+            "name": "Aro",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-04",
+            "paid": [
+                {
+                    "description": "Avance food",
+                    "amount": "99",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Briquette",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "500",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                },
+                {
+                    "description": "Avance food",
+                    "amount": "808",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Capucine",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance food",
+                    "amount": "340",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Chay",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance food",
+                    "amount": "130",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Coco",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "1000",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Daphné",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "2933.79",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                },
+                {
+                    "description": "Avance food",
+                    "amount": "291",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Flo",
+            "arrival_date": "2026-02-02",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance food",
+                    "amount": "48",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Franck",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07"
+        },
+        {
+            "name": "Gautier",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-06"
+        },
+        {
+            "name": "Hélène",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance food",
+                    "amount": "35",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Jeff",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07"
+        },
+        {
+            "name": "Juju",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-06"
+        },
+        {
+            "name": "Lorena",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "1000",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Loulou",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07"
+        },
+        {
+            "name": "Moog",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07"
+        },
+        {
+            "name": "Pachu",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "1000",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Paco",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07"
+        },
+        {
+            "name": "Robin",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "1000",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Roxanne",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-07",
+            "paid": [
+                {
+                    "description": "Avance house",
+                    "amount": "500",
+                    "expense_date": "2026-01-31",
+                    "category": "Avance"
+                }
+            ]
+        },
+        {
+            "name": "Seungeun",
+            "arrival_date": "2026-01-31",
+            "departure_date": "2026-02-06"
+        }
+    ],
+    "expenses": [
+        {
+            "description": "Chalet",
+            "amount": "7933.46",
+            "expense_date": "2026-01-31",
+            "category": "house",
+            "split_type": "by_nights"
+        },
+        {
+            "description": "Courses",
+            "amount": "1751.33",
+            "expense_date": "2026-02-01",
+            "category": "food",
+            "split_type": "by_nights"
+        }
+    ]
+}
