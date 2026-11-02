@@ -6,4 +6,3 @@ class SplitType(str, Enum):
     EQUALLY = "equally"
     BY_PARTICIPANTS = "by_participants"
     BY_PERCENTAGE = "by_percentage"
-    CUSTOM = "custom"

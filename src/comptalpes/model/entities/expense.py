@@ -23,7 +23,6 @@ class ExpenseShare(BaseEntity):
     trip_member: TripMember
     amount: Decimal = Field(ge=0)
     quantity: Decimal = Field(default=Decimal("0"), ge=0)
-    is_manually_adjusted: bool = False
 
     @field_validator("amount")
     @classmethod

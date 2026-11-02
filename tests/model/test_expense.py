@@ -80,8 +80,10 @@ def test_expense_split_type_default() -> None:
 
 def test_expense_split_type_override() -> None:
     category = ExpenseCategory(name="Chalet", split_type=SplitType.BY_NIGHTS)
-    expense = build_expense(category=category, split_type_override=SplitType.CUSTOM)
-    assert expense.split_type == SplitType.CUSTOM
+    expense = build_expense(
+        category=category, split_type_override=SplitType.BY_PERCENTAGE
+    )
+    assert expense.split_type == SplitType.BY_PERCENTAGE
 
 
 def test_expense_payment() -> None:
@@ -108,7 +110,6 @@ def test_expense_share() -> None:
     share = ExpenseShare(trip_member=ALICE, amount="50.00")
     assert share.amount == Decimal("50.00")
     assert share.quantity == Decimal("0")
-    assert share.is_manually_adjusted is False
 
 
 def test_expense_shares_total_must_match_amount() -> None:
