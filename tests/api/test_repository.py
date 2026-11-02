@@ -1,12 +1,12 @@
 import json
 import shutil
-from decimal import Decimal
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
-from api.repository import db_path, load_trips, save_trips
+from api.repository import db_path, ensure_db, load_trips, save_trips
 from comptalpes.model.entities import (
     Expense,
     ExpenseCategory,
@@ -75,3 +75,22 @@ def test_load_missing_trips_key(db_file: str) -> None:
 
 def test_db_path_uses_env(db_file: str) -> None:
     assert db_path() == Path(db_file)
+
+
+def test_ensure_db_creates_file(db_file: str) -> None:
+    ensure_db()
+    assert Path(db_file).is_file()
+    assert json.loads(Path(db_file).read_text(encoding="utf-8")) == {"trips": []}
+
+
+def test_ensure_db_creates_parent_directory(tmp_path, monkeypatch) -> None:
+    path = tmp_path / "missing" / "db.json"
+    monkeypatch.setenv("COMPTALPES_DB", str(path))
+    ensure_db()
+    assert path.is_file()
+
+
+def test_ensure_db_does_not_overwrite(db_file: str) -> None:
+    save_trips([build_trip()])
+    ensure_db()
+    assert len(load_trips()) == 1

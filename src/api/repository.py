@@ -9,6 +9,15 @@ def db_path() -> Path:
     return Path(os.getenv("COMPTALPES_DB", "db/local-db.json"))
 
 
+def ensure_db() -> None:
+    path = db_path()
+    if path.is_file():
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"trips": []}, f)
+
+
 def load_trips() -> list[Trip]:
     path = db_path()
     if not path.is_file():

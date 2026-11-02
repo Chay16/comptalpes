@@ -1,12 +1,23 @@
 from datetime import date
+from pathlib import Path
 
 from fastapi.testclient import TestClient
+
+from api.main import app
 
 TRIP_PAYLOAD = {
     "name": "Valloire",
     "start_date": "2026-01-31",
     "end_date": "2026-02-06",
 }
+
+
+def test_lifespan_creates_db_file(db_file: str) -> None:
+    assert not Path(db_file).exists()
+    with TestClient(app) as client:
+        response = client.get("/trips/")
+    assert response.status_code == 200
+    assert Path(db_file).is_file()
 
 
 def test_get_trips_empty(client: TestClient) -> None:

@@ -1,10 +1,20 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
+from .repository import ensure_db
 from .routers import api_trips
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ensure_db()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_trips.router)
 
