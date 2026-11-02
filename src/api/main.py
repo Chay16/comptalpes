@@ -2,11 +2,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from .routers import api_expenses, api_trips
+from .routers import api_trips
 
 app = FastAPI()
 
-app.include_router(api_expenses.router)
 app.include_router(api_trips.router)
 
 
