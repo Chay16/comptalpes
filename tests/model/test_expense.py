@@ -36,7 +36,7 @@ def build_expense(
 ) -> Expense:
     return Expense(
         description="Fundue",
-        amount=amount,
+        amount=Decimal(amount),
         expense_date=date(2026, 1, 12),
         category=category or ExpenseCategory(name="Restaurant"),
         split_type_override=split_type_override,
@@ -87,41 +87,41 @@ def test_expense_split_type_override() -> None:
 
 
 def test_expense_payment() -> None:
-    payment = ExpensePayment(trip_member=ALICE, amount="60.00")
+    payment = ExpensePayment(trip_member=ALICE, amount=Decimal("60.00"))
     assert payment.amount == Decimal("60.00")
 
 
 def test_expense_payments_total_must_match_amount() -> None:
-    payments = [ExpensePayment(trip_member=ALICE, amount="60.00")]
+    payments = [ExpensePayment(trip_member=ALICE, amount=Decimal("60.00"))]
     with pytest.raises(ValidationError):
         build_expense(amount="100.00", payments=payments)
 
 
 def test_expense_payments_valid() -> None:
     payments = [
-        ExpensePayment(trip_member=ALICE, amount="60.00"),
-        ExpensePayment(trip_member=BOB, amount="40.00"),
+        ExpensePayment(trip_member=ALICE, amount=Decimal("60.00")),
+        ExpensePayment(trip_member=BOB, amount=Decimal("40.00")),
     ]
     expense = build_expense(amount="100.00", payments=payments)
     assert len(expense.payments) == 2
 
 
 def test_expense_share() -> None:
-    share = ExpenseShare(trip_member=ALICE, amount="50.00")
+    share = ExpenseShare(trip_member=ALICE, amount=Decimal("50.00"))
     assert share.amount == Decimal("50.00")
     assert share.quantity == Decimal("0")
 
 
 def test_expense_shares_total_must_match_amount() -> None:
-    shares = [ExpenseShare(trip_member=ALICE, amount="50.00")]
+    shares = [ExpenseShare(trip_member=ALICE, amount=Decimal("50.00"))]
     with pytest.raises(ValidationError):
         build_expense(amount="100.00", shares=shares)
 
 
 def test_expense_shares_valid() -> None:
     shares = [
-        ExpenseShare(trip_member=ALICE, amount="50.00"),
-        ExpenseShare(trip_member=BOB, amount="50.00"),
+        ExpenseShare(trip_member=ALICE, amount=Decimal("50.00")),
+        ExpenseShare(trip_member=BOB, amount=Decimal("50.00")),
     ]
     expense = build_expense(amount="100.00", shares=shares)
     assert len(expense.shares) == 2
@@ -129,13 +129,13 @@ def test_expense_shares_valid() -> None:
 
 def test_expense_rejects_non_positive_payment_amount() -> None:
     with pytest.raises(ValidationError):
-        ExpensePayment(trip_member=ALICE, amount="0")
+        ExpensePayment(trip_member=ALICE, amount=Decimal("0"))
 
 
 def test_expense_allows_zero_share_amount() -> None:
     shares = [
-        ExpenseShare(trip_member=ALICE, amount="0.00"),
-        ExpenseShare(trip_member=BOB, amount="100.00"),
+        ExpenseShare(trip_member=ALICE, amount=Decimal("0.00")),
+        ExpenseShare(trip_member=BOB, amount=Decimal("100.00")),
     ]
     expense = build_expense(amount="100.00", shares=shares)
     assert expense.shares[0].amount == Decimal("0.00")
