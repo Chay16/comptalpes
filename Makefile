@@ -31,4 +31,4 @@ webapp:
 	@uv run streamlit run src/webapp/comptalpes.py
 
 server:
-	@uv run fastapi dev src/app/main.py
+	@uv run fastapi dev src/api/main.py
