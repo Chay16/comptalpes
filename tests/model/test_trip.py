@@ -17,9 +17,7 @@ def build_trip(
     end: date = date(2026, 1, 17),
     members: list[TripMember] | None = None,
 ) -> Trip:
-    return Trip(
-        name="Valloire", start_date=start, end_date=end, members=members or []
-    )
+    return Trip(name="Valloire", start_date=start, end_date=end, members=members or [])
 
 
 def test_trip() -> None:
