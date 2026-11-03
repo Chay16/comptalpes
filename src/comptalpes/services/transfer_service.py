@@ -13,6 +13,7 @@ class TransfersCalculator:
         self,
         balances: dict[UUID, Decimal],
         members: list[TripMember],
+        check_balance: bool = True,
     ) -> list[Transfer]:
 
         members_by_id = {member.id: member for member in members}
@@ -53,7 +54,7 @@ class TransfersCalculator:
             ZERO,
         )
 
-        if total_credit != total_debt:
+        if check_balance and total_credit != total_debt:
             raise ValueError(
                 f"Total debt ({total_debt}) must equal total credit ({total_credit})"
             )

@@ -154,3 +154,26 @@ def test_member_outside_trip_raises() -> None:
     )
     with pytest.raises(ValueError, match="doesn't belong to the trip"):
         BalanceCalculator().calculate(trip)
+
+
+def test_unbalanced_allowed_without_check() -> None:
+    expense = Expense(
+        description="Fundue",
+        amount="100.00",
+        expense_date=date(2026, 1, 12),
+        category=ExpenseCategory(name="Restaurant"),
+        shares=[
+            ExpenseShare(trip_member=ALICE, amount="50.00"),
+            ExpenseShare(trip_member=BOB, amount="50.00"),
+        ],
+    )
+    trip = Trip(
+        name="Serre Chevalier",
+        start_date=ARRIVAL,
+        end_date=DEPARTURE,
+        members=[ALICE, BOB],
+        expenses=[expense],
+    )
+    balances = BalanceCalculator().calculate(trip, check_balance=False)
+    assert balances[ALICE.id] == Decimal("-50.00")
+    assert balances[BOB.id] == Decimal("-50.00")

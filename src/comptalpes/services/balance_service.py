@@ -8,7 +8,7 @@ ZERO = Decimal("0.00")
 
 
 class BalanceCalculator:
-    def calculate(self, trip: Trip) -> dict[UUID, Decimal]:
+    def calculate(self, trip: Trip, check_balance: bool = True) -> dict[UUID, Decimal]:
         balances = {member.id: ZERO for member in trip.members}
 
         for expense in trip.expenses:
@@ -34,10 +34,11 @@ class BalanceCalculator:
             self._validate_member(receiver_id, balances)
             balances[receiver_id] -= settlement.amount
 
-        total_balance = sum(balances.values(), ZERO)
+        if check_balance:
+            total_balance = sum(balances.values(), ZERO)
 
-        if total_balance != ZERO:
-            raise ValueError(f"Balances are not balanced: {total_balance}")
+            if total_balance != ZERO:
+                raise ValueError(f"Balances are not balanced: {total_balance}")
 
         return balances
 

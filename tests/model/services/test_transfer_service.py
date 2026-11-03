@@ -63,3 +63,12 @@ def test_unknown_member_raises() -> None:
     balances = {outsider.id: Decimal("50.00"), BOB.id: Decimal("-50.00")}
     with pytest.raises(ValueError, match="Unknown participant"):
         TransfersCalculator().calculate(balances, [ALICE, BOB])
+
+
+def test_unbalanced_allowed_without_check() -> None:
+    balances = {ALICE.id: Decimal("50.00"), BOB.id: Decimal("-40.00")}
+    transfers = TransfersCalculator().calculate(
+        balances, [ALICE, BOB], check_balance=False
+    )
+    assert len(transfers) == 1
+    assert transfers[0].amount == Decimal("40.00")
