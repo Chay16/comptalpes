@@ -10,9 +10,11 @@ MAKEFLAGS += --no-builtin-rules
 install:
 	@uv lock --check
 	@uv sync
+	@uv run pre-commit install
 
 lint:
 	@uv run ruff check .
+	@uv run ruff format --check .
 
 format:
 	@uv run ruff format .
