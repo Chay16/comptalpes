@@ -60,3 +60,42 @@ else:
                 st.rerun()
             else:
                 st.error(f"Error: {response.json().get('detail')}")
+
+    if trips:
+        with st.expander("Add Member"):
+            users = utils.get_users(BASE_URL) or []
+            member_user_ids = {member.user.id for member in trip_selected.members}
+            available_users = [user for user in users if user.id not in member_user_ids]
+
+            if not available_users:
+                st.info("All users are already members.")
+            else:
+                user_selected = st.selectbox(
+                    "User",
+                    [user.name for user in available_users],
+                    key="add_member_user",
+                )
+                member_arrival = st.date_input("Arrival date", key="add_member_arrival")
+                member_departure = st.date_input(
+                    "Departure date", key="add_member_departure"
+                )
+                if st.button("Add Member"):
+                    user_id = next(
+                        user.id
+                        for user in available_users
+                        if user.name == user_selected
+                    )
+                    response = requests.post(
+                        f"{BASE_URL}/trip/{st.session_state['TRIP_ID']}/members/",
+                        json={
+                            "user_id": str(user_id),
+                            "arrival_date": member_arrival.isoformat(),
+                            "departure_date": member_departure.isoformat(),
+                        },
+                        timeout=2,
+                    )
+                    if response.status_code == 200:
+                        st.success(f"{user_selected} added to {trip_selected.name}!")
+                        st.rerun()
+                    else:
+                        st.error(f"Error: {response.json().get('detail')}")

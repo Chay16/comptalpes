@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from api.repository import load_trips, save_trips
+from api.repository import load_trips, load_users, save_trips
 from comptalpes.model.entities import (
     Expense,
     ExpenseCategory,
@@ -19,7 +19,7 @@ router = APIRouter()
 
 
 class TripMemberPayload(BaseModel):
-    name: str
+    user_id: UUID
     arrival_date: date
     departure_date: date
 
@@ -48,14 +48,22 @@ class ExpenseUpdatePayload(BaseModel):
     split_type: SplitType | None = None
 
 
+def get_user_from_user_id(users: list[User], user_id: UUID) -> User:
+    for user in users:
+        if user.id == user_id:
+            return user
+    raise HTTPException(status_code=404, detail=f"User {user_id} not found.")
+
+
 def build_trip(payload: TripPayload) -> Trip:
+    users = load_users()
     members = [
         TripMember(
-            user=User(name=member.name),
-            arrival_date=member.arrival_date,
-            departure_date=member.departure_date,
+            user=get_user_from_user_id(users, member_payload.user_id),
+            arrival_date=member_payload.arrival_date,
+            departure_date=member_payload.departure_date,
         )
-        for member in payload.members or []
+        for member_payload in payload.members or []
     ]
     return Trip(
         name=payload.name,
@@ -119,13 +127,18 @@ def get_trip(trip_id: UUID):
 def add_member(trip_id: UUID, payload: TripMemberPayload):
     trips = load_trips()
     trip = get_trip_from_trip_id(trips, trip_id)
+    if any(member.user.id == payload.user_id for member in trip.members):
+        raise HTTPException(
+            status_code=409,
+            detail=f"User {payload.user_id} is already a member of trip {trip_id}.",
+        )
+    user = get_user_from_user_id(load_users(), payload.user_id)
     member = TripMember(
-        user=User(name=payload.name),
+        user=user,
         arrival_date=payload.arrival_date,
         departure_date=payload.departure_date,
     )
-    updated = replace_trip(trips, trip, members=[*trip.members, member])
-    return updated
+    return replace_trip(trips, trip, members=[*trip.members, member])
 
 
 @router.post("/trip/{trip_id}/expenses/", tags=["trips"])

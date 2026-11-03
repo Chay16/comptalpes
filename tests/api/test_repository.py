@@ -88,7 +88,7 @@ def test_ensure_db_creates_file(db_file: str) -> None:
     ensure_db()
     assert Path(db_file).is_file()
     assert json.loads(Path(db_file).read_text(encoding="utf-8")) == {
-        "trips": [],
+        "trip": {},
         "users": [],
     }
 

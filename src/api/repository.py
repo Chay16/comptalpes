@@ -36,16 +36,16 @@ def ensure_db() -> None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        json.dump({"trips": [], "users": []}, f)
+        json.dump({"trip": {}, "users": []}, f)
 
 
 def load_trips() -> list[Trip]:
-    return [Trip.model_validate(item) for item in _read().get("trips", [])]
+    return [Trip.model_validate(item) for item in _read().get("trip", {}).values()]
 
 
 def save_trips(trips: list[Trip]) -> None:
     data = _read()
-    data["trips"] = [trip.model_dump(mode="json") for trip in trips]
+    data["trip"] = {str(trip.id): trip.model_dump(mode="json") for trip in trips}
     _write(data)
 
 
