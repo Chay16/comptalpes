@@ -36,7 +36,7 @@ class ExpensePayload(BaseModel):
     description: str
     amount: Decimal
     expense_date: date | None = None
-    category: str = "Divers"
+    category: str = "Other"
     split_type: SplitType | None = None
 
 
@@ -66,14 +66,14 @@ def build_trip(payload: TripPayload) -> Trip:
     )
 
 
-def get_trip_or_404(trips: list[Trip], trip_id: UUID) -> Trip:
+def get_trip_from_trip_id(trips: list[Trip], trip_id: UUID) -> Trip:
     for trip in trips:
         if trip.id == trip_id:
             return trip
     raise HTTPException(status_code=404, detail=f"Trip {trip_id} not found.")
 
 
-def get_expense_or_404(trip: Trip, expense_id: UUID) -> Expense:
+def get_expense(trip: Trip, expense_id: UUID) -> Expense:
     for expense in trip.expenses:
         if expense.id == expense_id:
             return expense
@@ -96,12 +96,12 @@ def replace_trip(trips: list[Trip], old: Trip, **updates) -> Trip:
     return updated
 
 
-@router.get("/trips/", tags=["trips"])
+@router.get("/trip/", tags=["trips"])
 def get_trips():
     return load_trips()
 
 
-@router.post("/trips/", tags=["trips"])
+@router.post("/trip/", tags=["trips"])
 def add_trip(payload: TripPayload):
     trip = build_trip(payload)
     trips = load_trips()
@@ -110,15 +110,15 @@ def add_trip(payload: TripPayload):
     return trip
 
 
-@router.get("/trips/{trip_id}", tags=["trips"])
+@router.get("/trip/{trip_id}", tags=["trips"])
 def get_trip(trip_id: UUID):
-    return get_trip_or_404(load_trips(), trip_id)
+    return get_trip_from_trip_id(load_trips(), trip_id)
 
 
-@router.post("/trips/{trip_id}/members/", tags=["trips"])
+@router.post("/trip/{trip_id}/members/", tags=["trips"])
 def add_member(trip_id: UUID, payload: TripMemberPayload):
     trips = load_trips()
-    trip = get_trip_or_404(trips, trip_id)
+    trip = get_trip_from_trip_id(trips, trip_id)
     member = TripMember(
         user=User(name=payload.name),
         arrival_date=payload.arrival_date,
@@ -128,10 +128,10 @@ def add_member(trip_id: UUID, payload: TripMemberPayload):
     return updated
 
 
-@router.post("/trips/{trip_id}/expenses/", tags=["trips"])
+@router.post("/trip/{trip_id}/expenses/", tags=["trips"])
 def add_expense(trip_id: UUID, payload: ExpensePayload):
     trips = load_trips()
-    trip = get_trip_or_404(trips, trip_id)
+    trip = get_trip_from_trip_id(trips, trip_id)
     expense = Expense(
         description=payload.description,
         amount=payload.amount,
@@ -143,11 +143,11 @@ def add_expense(trip_id: UUID, payload: ExpensePayload):
     return expense
 
 
-@router.patch("/trips/{trip_id}/expenses/{expense_id}", tags=["trips"])
+@router.patch("/trip/{trip_id}/expenses/{expense_id}", tags=["trips"])
 def update_expense(trip_id: UUID, expense_id: UUID, payload: ExpenseUpdatePayload):
     trips = load_trips()
-    trip = get_trip_or_404(trips, trip_id)
-    expense = get_expense_or_404(trip, expense_id)
+    trip = get_trip_from_trip_id(trips, trip_id)
+    expense = get_expense(trip, expense_id)
 
     category_name = payload.category or expense.category.name
     category = ExpenseCategory(

@@ -26,6 +26,6 @@ def client(db_file: str) -> TestClient:
 
 @pytest.fixture
 def client_and_trip(client: TestClient) -> tuple[TestClient, str]:
-    response = client.post("/trips/", json=TRIP_PAYLOAD)
+    response = client.post("/trip/", json=TRIP_PAYLOAD)
     assert response.status_code == 200
     return client, response.json()["id"]
