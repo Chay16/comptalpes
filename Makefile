@@ -5,7 +5,7 @@ SHELL := /bin/bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-.PHONY: install lint format test cov cov-html
+.PHONY: install lint format test cov cov-html webapp server app
 
 install:
 	@uv lock --check
@@ -34,3 +34,12 @@ webapp:
 
 server:
 	@uv run fastapi dev src/api/main.py
+
+app:
+	@mkdir -p logs
+	@uv run fastapi dev src/api/main.py >logs/api.log 2>&1 & \
+	api_pid=$$!; \
+	trap 'kill $$api_pid 2>/dev/null' EXIT INT TERM; \
+	until curl -sf -o /dev/null http://127.0.0.1:8000/docs; do sleep 0.5; done; \
+	echo "API up (log: logs/api.log)"; \
+	uv run streamlit run src/webapp/home.py
