@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from .repository import ensure_db
-from .routers import api_trip
+from .routers import api_trip, api_user
 
 
 @asynccontextmanager
@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_trip.router)
+app.include_router(api_user.router)
 
 
 @app.exception_handler(ValidationError)
