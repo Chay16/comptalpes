@@ -30,7 +30,7 @@ cov-html: install
 	@uv run pytest --cov src --cov-branch --cov-report html --cov-report term
 
 webapp:
-	@uv run streamlit run src/webapp/home.py
+	@uv run streamlit run src/webapp/app.py
 
 server:
 	@uv run fastapi dev src/api/main.py
@@ -42,4 +42,4 @@ app:
 	trap 'kill $$api_pid 2>/dev/null' EXIT INT TERM; \
 	until curl -sf -o /dev/null http://127.0.0.1:8000/docs; do sleep 0.5; done; \
 	echo "API up (log: logs/api.log)"; \
-	uv run streamlit run src/webapp/home.py
+	uv run streamlit run src/webapp/app.py

@@ -6,7 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from api.repository import db_path, ensure_db, load_trips, save_trips
+from api.repository import (
+    db_path,
+    ensure_db,
+    load_trips,
+    load_users,
+    save_trips,
+    save_users,
+)
 from comptalpes.model.entities import (
     Expense,
     ExpenseCategory,
@@ -80,7 +87,10 @@ def test_db_path_uses_env(db_file: str) -> None:
 def test_ensure_db_creates_file(db_file: str) -> None:
     ensure_db()
     assert Path(db_file).is_file()
-    assert json.loads(Path(db_file).read_text(encoding="utf-8")) == {"trips": []}
+    assert json.loads(Path(db_file).read_text(encoding="utf-8")) == {
+        "trips": [],
+        "users": [],
+    }
 
 
 def test_ensure_db_creates_parent_directory(tmp_path, monkeypatch) -> None:
@@ -94,3 +104,30 @@ def test_ensure_db_does_not_overwrite(db_file: str) -> None:
     save_trips([build_trip()])
     ensure_db()
     assert len(load_trips()) == 1
+
+
+def test_save_trips_keeps_users(db_file: str) -> None:
+    save_users([User(name="Alice")])
+    save_trips([build_trip()])
+    assert len(load_users()) == 1
+    assert len(load_trips()) == 1
+
+
+def test_save_users_keeps_trips(db_file: str) -> None:
+    save_trips([build_trip()])
+    save_users([User(name="Alice")])
+    assert len(load_trips()) == 1
+    assert len(load_users()) == 1
+
+
+def test_load_users_missing_file(db_file: str) -> None:
+    assert load_users() == []
+
+
+def test_save_load_users_round_trip(db_file: str) -> None:
+    alice = User(name="Alice")
+    bob = User(name="Bob")
+    save_users([alice, bob])
+    loaded = load_users()
+    assert [user.id for user in loaded] == [alice.id, bob.id]
+    assert [user.name for user in loaded] == ["Alice", "Bob"]
